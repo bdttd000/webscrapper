@@ -1,7 +1,11 @@
 import React, {useEffect, useState} from 'react'
 
+interface User {
+  users: string[];
+}
+
 const App = () => {
-  const [backendData, setBackendData] = useState([{}])
+  const [backendData, setBackendData] = useState<User>({users: []})
 
   useEffect(() => {
     fetch("/api").then(
