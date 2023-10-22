@@ -17,10 +17,8 @@ const App = () => {
 
   return (
     <div>
-      {backendData ? backendData.map((league) => 
-        <League 
-        {...league}
-        />
+      {backendData ? backendData.map((league, index) => 
+        <League {...league} key={index}/>
       ) : 'Data not found'}
     </div>
   )
