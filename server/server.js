@@ -1,9 +1,14 @@
 import express from 'express';
+import { database } from './config/database.js';
+import { League } from './models/League.js';
 
 const app = express();
 
-app.get("/api", (req, res) => {
-    res.json({"users": ["userOne", "userTwo", "userThree"]})
+app.get("/api", async (req, res) => {
+    let collection = await database.collection("lvbet");
+    let results = await collection.find({})
+        .toArray();
+    res.send(results).status(200);
 })
 
 app.listen(3001, () => {
