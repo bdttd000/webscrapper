@@ -1,6 +1,5 @@
 import express from 'express';
 import { database } from './config/database.js';
-import { League } from './models/League.js';
 
 const app = express();
 

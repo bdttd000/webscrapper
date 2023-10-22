@@ -1,11 +1,9 @@
-import React, {useEffect, useState} from 'react'
-
-interface User {
-  users: string[];
-}
+import {useEffect, useState} from 'react'
+import leagueInterface from './interfaces/LeagueInterface'
+import League from './components/League';
 
 const App = () => {
-  const [backendData, setBackendData] = useState<User>({users: []})
+  const [backendData, setBackendData] = useState<leagueInterface[] | undefined>();
 
   useEffect(() => {
     fetch("/api").then(
@@ -19,12 +17,11 @@ const App = () => {
 
   return (
     <div>
-        {(typeof backendData.users === 'undefined') ? (
-          <p>Loading...</p>
-        ) : (
-          backendData.users.map((user, i) => 
-            <p key={i}>{user}</p>
-        ))}
+      {backendData ? backendData.map((league) => 
+        <League 
+        {...league}
+        />
+      ) : 'Data not found'}
     </div>
   )
 }
