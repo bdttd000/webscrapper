@@ -10,7 +10,7 @@ const Player = ({playerName, rates}: playerInterface) => {
   }
 
   return (
-    <div className='bg-green-400'>
+    <div className='bg-gray-600 m-2 p-2 rounded'>
         <p onClick={handleClick} className='cursor-pointer'>{playerName}</p>
         <div style={{display: isShown ? 'block' : 'none'}}>
           <PlayerRates {...rates}/>

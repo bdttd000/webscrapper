@@ -10,7 +10,7 @@ const League = ({_id, leagueName, matches}: leagueInterface) => {
   }
 
   return (
-    <div className='bg-red-400 m-2'>
+    <div className='bg-gray-800 m-2 p-2 rounded'>
         <p onClick={handleClick} className='cursor-pointer'>{leagueName}</p>
         <div style={{display: isShown ? 'block' : 'none'}}>
           {matches.map((match, index) => <Match {...match} key={index}/> )}

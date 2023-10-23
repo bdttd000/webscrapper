@@ -16,7 +16,7 @@ const App = () => {
   }, [])
 
   return (
-    <div>
+    <div className='bg-black min-h-screen p-2 text-white'>
       {backendData ? backendData.map((league, index) => 
         <League {...league} key={index}/>
       ) : 'Data not found'}
