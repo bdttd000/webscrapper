@@ -1,8 +1,8 @@
 import puppeteer from 'puppeteer';
 import axios from 'axios';
-import { lvbet } from './config.js';
+import { lvbet } from '../config/database.js';
 
-const getLvbetData = async () => {
+export const getLvbetData = async () => {
     const data = {pageName: lvbet.leagueName, leagues: []};
     try {
         // Setup
@@ -33,10 +33,18 @@ const getLvbetData = async () => {
             let outputLeagueName = await page.evaluate(el => el.textContent, outputLeagueSecondChild);
             outputLeagueName = outputLeagueName.trim().replace(/\s/g, '');
 
-            // Szukanie kategorii "Strzały na bramkę"
+            // WYBÓR KATEGORII
+            // ========== Szukanie kategorii "Strzały na bramkę"
             await page.waitForSelector('.main-stats__item.main-stat.main-stat--open');
             const categories = await page.$$('.main-markets__list .cap');
             const category = categories[3];
+            // // ========== Szukanie kategorii "Podania"
+            // await page.waitForSelector('.main-stats__item.main-stat.main-stat--open');
+            // const dropdown = await page.$('.main-markets__more');
+            // await dropdown.hover();
+            // await page.$('.main-markets__hidden-item');
+            // const categories = await page.$$('.main-markets__hidden-item');
+            // const category = categories[1];
             
             // Wejście w kategorie
             await category.click();
@@ -105,7 +113,7 @@ const getLvbetData = async () => {
             }
             data.leagues.push({leagueName: outputLeagueName, matches: outputMatches});
             const outputData = {leagueName: outputLeagueName, matches: outputMatches};
-            sendData(outputData) // TEST
+            sendData(outputData) // generateExcelData - aby generować excela
             // console.log(outputMatches)
         }
         // console.log(lvbet);
@@ -117,8 +125,21 @@ const getLvbetData = async () => {
     }
 }
 
+const generateExcelData = (data) => {
+    const reutrnData = [];
+    for (const match of data.matches) {
+        reutrnData.push({playerName: ''});
+        reutrnData.push({playerName: match.matchName});
+        for (const player of match.players) {
+            reutrnData.push({playerName: player.playerName, rates: player.rates})
+        }
+    }
+    console.log(reutrnData);
+    sendData({reutrnData});
+}
+
 const sendData = (data) => {
-    axios.post('http://localhost:3000/api', data)
+    axios.post('http://localhost:3001/api', data)
         .then((response) => {
             console.log('Lvbet wysłano ' + data.leagueName);
         })
@@ -126,5 +147,3 @@ const sendData = (data) => {
             console.error('Błąd podczas wysyłania danych: ' + error);
         });
 }
-
-getLvbetData();
