@@ -7,6 +7,10 @@ const app = express();
 app.use(bodyParser.json());
 
 app.get("/api", async (req, res) => {
+    res.status(200).send({'test api': 'ok'});
+})
+
+app.get("/api/lvbet", async (req, res) => {
     const collection = await database.collection("lvbet");
     const results = await collection.find({}).toArray();
     res.status(200).send(results);
@@ -26,8 +30,9 @@ app.get("/updateApi", async (req, res) => {
 });
 
 app.post('/api', async (req, res) => {
-    const odebraneDane = req.body;
-    await database.collection('lvbet').insertOne(odebraneDane);
+    const receivedData = req.body;
+    console.log(req.body);
+    await database.collection(`${receivedData.pageName}`).insertOne(receivedData.data);
 });
 
 app.listen(3001, () => {

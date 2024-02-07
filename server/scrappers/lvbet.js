@@ -139,7 +139,8 @@ const generateExcelData = (data) => {
 }
 
 const sendData = (data) => {
-    axios.post('http://localhost:3001/api', data)
+    const updatedData = {pageName: lvbet.pageName, data: data};
+    axios.post('http://localhost:3001/api', updatedData)
         .then((response) => {
             console.log('Lvbet wysłano ' + data.leagueName);
         })

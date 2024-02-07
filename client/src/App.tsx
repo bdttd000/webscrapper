@@ -13,7 +13,7 @@ const App = () => {
   const [content, setContent] = useState<string>("Wszystko zostało załadowane");
 
   useEffect(() => {
-    fetch("/api")
+    fetch("/api/lvbet")
       .then((resonse) => resonse.json())
       .then((data) => {
         setBackendData(data);
