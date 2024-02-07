@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 import leagueInterface from "./interfaces/LeagueInterface";
 import League from "./components/League";
 
-// interface YourDataInterface {
-//   // Definiuj tutaj typy Twoich danych
-// }
-
 const App = () => {
   const [backendData, setBackendData] = useState<
     leagueInterface[] | undefined
@@ -21,7 +17,7 @@ const App = () => {
   }, []);
 
   const getNewApi = async (data: any): Promise<void> => {
-    setContent("Ładowanie");
+    setContent("Ładowanie...");
 
     await fetch("/updateApi")
       .then((resonse) => resonse.json())
@@ -34,13 +30,21 @@ const App = () => {
 
   return (
     <div className="bg-black min-h-screen p-2 text-white">
-      <div
-        className="bg-gray-800 m-2 p-2 rounded w-fit cursor-pointer"
-        onClick={getNewApi}
-      >
-        fetch new api
+      <div className="flex">
+        <div
+          className="bg-gray-800 m-2 p-2 rounded w-fit cursor-pointer"
+          onClick={getNewApi}
+        >
+          Fetch api lvbet
+        </div>
+        <div
+          className="bg-gray-800 m-2 p-2 rounded w-fit cursor-pointer"
+          onClick={getNewApi}
+        >
+          fetch new api
+        </div>
       </div>
-      <div>{content}</div>
+      <div className="bg-blue-700 m-2 p-2 rounded w-fit">{content}</div>
       {backendData
         ? backendData.map((league, index) => <League {...league} key={index} />)
         : "Data not found"}

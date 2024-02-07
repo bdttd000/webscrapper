@@ -31,7 +31,6 @@ app.get("/updateApi", async (req, res) => {
 
 app.post('/api', async (req, res) => {
     const receivedData = req.body;
-    console.log(req.body);
     await database.collection(`${receivedData.pageName}`).insertOne(receivedData.data);
 });
 

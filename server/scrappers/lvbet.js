@@ -25,7 +25,7 @@ export const getLvbetData = async () => {
         for (const league of leagues) {
             // Wejście w ligi
             await league.click();
-            await page.waitForTimeout(1000);
+            await new Promise(r => setTimeout(r, 1000));
 
             // Wydobycie nazwy ligi
             const outputLeagueParent = await page.evaluateHandle(element => element.parentElement, league);
@@ -33,21 +33,27 @@ export const getLvbetData = async () => {
             let outputLeagueName = await page.evaluate(el => el.textContent, outputLeagueSecondChild);
             outputLeagueName = outputLeagueName.trim().replace(/\s/g, '');
 
-            // WYBÓR KATEGORII
-            // ========== Szukanie kategorii "Strzały na bramkę"
+            // Zaczytanie wszystkich kategorii
             await page.waitForSelector('.main-stats__item.main-stat.main-stat--open');
-            const categories = await page.$$('.main-markets__list .cap');
-            const category = categories[3];
-            // // ========== Szukanie kategorii "Podania"
-            // await page.waitForSelector('.main-stats__item.main-stat.main-stat--open');
-            // const dropdown = await page.$('.main-markets__more');
-            // await dropdown.hover();
-            // await page.$('.main-markets__hidden-item');
-            // const categories = await page.$$('.main-markets__hidden-item');
-            // const category = categories[1];
-            
-            // Wejście w kategorie
-            await category.click();
+            page.hover('.main-markets__more');
+            page.hover('.main-markets__hidden-item');
+            const categories = await page.$$('.main-markets .cap,.main-markets__more .main-markets__hidden-item');
+            let isCategoryFound = false;
+
+            for (let i = 0; i < categories.length; i++) {
+                let text = await page.evaluate(el => el.innerText, categories[i]);
+                if(text.indexOf("Podania") > -1 ) // Wybór interesującej nas kategorii
+                {
+                    await categories[i].click();
+                    isCategoryFound = true;
+                }
+            }
+
+            if (!isCategoryFound) {
+                // console.log('nie znaleziono kategorii');
+                continue;
+            }
+
             await new Promise(r => setTimeout(r, 1000));
 
             // Wyszukanie meczy
@@ -89,15 +95,15 @@ export const getLvbetData = async () => {
                     let outputPlayerName = await page.evaluate(el => el.textContent, playerName);
                     outputPlayerName = outputPlayerName.trim();
                     // Wyciągnięcie kursów zawodnika
-                    const rates = await player.$$('.hoverStyle');
+                    const rates = await player.$$('.markets-slider__item');
                     // Operacje na kursach
                     for (const rate of rates) {
                         // Wyciągnięcie ilości strzałów
-                        const numberOfShots = await rate.$('.shots-slider__amount');
+                        const numberOfShots = await rate.$('.markets-slider__amount');
                         let outputNumberOfShots = await page.evaluate(el => el.textContent, numberOfShots);
                         outputNumberOfShots = parseInt(outputNumberOfShots.replace(/\+/g, '').trim());
                         // Wyciągnięcie kursu
-                        const finalRate = await rate.$('.shots-slider__stat');
+                        const finalRate = await rate.$('.markets-slider__stat');
                         let outputFinalRate = await page.evaluate(el => el.textContent, finalRate);
                         outputFinalRate = parseFloat(outputFinalRate);
                         // Dodanie kursów
