@@ -3,29 +3,40 @@ import leagueInterface from "./interfaces/LeagueInterface";
 import League from "./components/League";
 
 const App = () => {
-  const [backendData, setBackendData] = useState<
-    leagueInterface[] | undefined
-  >();
+  const [lvbetData, setLvbetData] = useState<leagueInterface[] | undefined>();
   const [content, setContent] = useState<string>("Wszystko zostało załadowane");
 
   useEffect(() => {
     fetch("/api/lvbet")
       .then((resonse) => resonse.json())
       .then((data) => {
-        setBackendData(data);
+        setLvbetData(data);
       });
   }, []);
 
-  const getNewApi = async (data: any): Promise<void> => {
-    setContent("Ładowanie...");
+  const fetchLvbetApi = async (data: any): Promise<void> => {
+    setContent("Pobieranie api z lvbet...");
 
-    await fetch("/updateApi")
+    await fetch("/api/lvbet/update")
       .then((resonse) => resonse.json())
       .then((data) => {
-        setBackendData(data);
+        setLvbetData(data);
       });
 
-    setContent("Wszystko zostało załadowane");
+    setContent("Api zostało załadowane");
+  };
+
+  const fetch888sportsApi = async (data: any): Promise<void> => {
+    setContent("Pobieranie api z 888sports");
+
+    await fetch("/api/888sports/update")
+      .then((resonse) => resonse.json())
+      .then((data) => console.log(data));
+    // .then((data) => {
+    //   setBackendData(data);
+    // });
+
+    setContent("Api zostało załadowane");
   };
 
   return (
@@ -33,20 +44,20 @@ const App = () => {
       <div className="flex">
         <div
           className="bg-gray-800 m-2 p-2 rounded w-fit cursor-pointer"
-          onClick={getNewApi}
+          onClick={fetchLvbetApi}
         >
-          Fetch api lvbet
+          Fetch Lvbet Api
         </div>
         <div
           className="bg-gray-800 m-2 p-2 rounded w-fit cursor-pointer"
-          onClick={getNewApi}
+          onClick={fetch888sportsApi}
         >
-          fetch new api
+          Fetch 888sports Api
         </div>
       </div>
       <div className="bg-blue-700 m-2 p-2 rounded w-fit">{content}</div>
-      {backendData
-        ? backendData.map((league, index) => <League {...league} key={index} />)
+      {lvbetData
+        ? lvbetData.map((league, index) => <League {...league} key={index} />)
         : "Data not found"}
     </div>
   );
