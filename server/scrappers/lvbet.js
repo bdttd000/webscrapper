@@ -1,17 +1,18 @@
 import puppeteer from 'puppeteer';
-import axios from 'axios';
-import { lvbet } from '../config/database.js';
+import { _lvbet } from '../config/database.js';
+import { sendData } from '../utils/dataReceiver.js';
 
 export const getLvbetData = async () => {
-    const data = {pageName: lvbet.leagueName, leagues: []};
+    const data = {pageName: _lvbet.leagueName, leagues: []};
     try {
         // Setup
         const browser = await puppeteer.launch({
             executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-            headless: "new"
+            headless: "new", // Procesy będą wykonywały się w tle
+            // headless: false // Procesy będą widoczne w nowej przeglądarce
         });
         const page = await browser.newPage();
-        await page.goto(lvbet.baseUrl);
+        await page.goto(_lvbet.baseUrl);
 
         // Wyszukanie lig piłki nożnej
         await page.waitForSelector('.ligues-slider__icon.icon.icon-football');
@@ -119,38 +120,13 @@ export const getLvbetData = async () => {
             }
             data.leagues.push({leagueName: outputLeagueName, matches: outputMatches});
             const outputData = {leagueName: outputLeagueName, matches: outputMatches};
-            sendData(outputData) // generateExcelData - aby generować excela
+            const updatedData = {pageName: _lvbet.pageName, data: outputData};
+            sendData(updatedData) // generateExcelData(outputData) - aby generować excela
             // console.log(outputMatches)
         }
-        // console.log(lvbet);
-
 
         await browser.close();
     } catch (error) {
         console.error('Wystąpił błąd:', error);
     }
-}
-
-const generateExcelData = (data) => {
-    const reutrnData = [];
-    for (const match of data.matches) {
-        reutrnData.push({playerName: ''});
-        reutrnData.push({playerName: match.matchName});
-        for (const player of match.players) {
-            reutrnData.push({playerName: player.playerName, rates: player.rates})
-        }
-    }
-    console.log(reutrnData);
-    sendData({reutrnData});
-}
-
-const sendData = (data) => {
-    const updatedData = {pageName: lvbet.pageName, data: data};
-    axios.post('http://localhost:3001/api', updatedData)
-        .then((response) => {
-            console.log('Lvbet wysłano ' + data.leagueName);
-        })
-        .catch((error) => {
-            console.error('Błąd podczas wysyłania danych: ' + error);
-        });
 }
