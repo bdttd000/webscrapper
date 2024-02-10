@@ -17,6 +17,7 @@ export const getLvbetData = async () => {
 
         // Wyszukanie lig piłki nożnej
         await page.waitForSelector('.ligues-slider__icon.icon.icon-football');
+        await new Promise(r => setTimeout(r, 1000));
         const leagues = await page.$$('.ligues-slider__icon.icon.icon-football:not(.ligues-slider__item--unavailable > .icon, .sport-container > .icon)');
 
         if (leagues.length === 0)  {

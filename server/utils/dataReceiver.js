@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Funkcja generująca dane do excela
 const generateExcelData = (data) => {
     const reutrnData = [];
     for (const match of data.matches) {
@@ -13,6 +14,7 @@ const generateExcelData = (data) => {
     sendData({reutrnData});
 }
 
+// Funkcja wysyłająca dane do bazy
 const sendData = (data) => {
     axios.post('http://localhost:3001/api', data)
         .then((response) => {

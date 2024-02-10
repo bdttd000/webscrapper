@@ -1,4 +1,16 @@
-export const monthTranslator = (month) => {
+// Funkcja do zmiany formatu z porą dnia do samej godziny
+// Przykład 
+// Konwertuje "2:34pm" into "12:34"
+const formatTime = (time) => {
+    let [hours, minutes, meridiem] = [...time.slice(0, -2).split(':'), time.slice(-2)];
+    hours = meridiem.toLowerCase() === 'pm' ? +hours + 12 : hours;
+    return `${hours}:${minutes}`;
+}
+
+// Funkcja zmieniająca angielską nazwę miesiąca pełną lub skrót na polski skrót
+// Przykład 
+// Konwertuje "july" / "jul" into "lip"
+const monthTranslator = (month) => {
     const monthNamesEnglish = [
         "january", "february", "march", "april", "may", "june",
         "july", "august", "september", "october", "november", "december",
@@ -18,3 +30,5 @@ export const monthTranslator = (month) => {
 
     return null;
 }
+
+export {formatTime, monthTranslator}
