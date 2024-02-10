@@ -56,9 +56,34 @@ const App = () => {
         </div>
       </div>
       <div className="bg-blue-700 m-2 p-2 rounded w-fit">{content}</div>
-      {lvbetData
-        ? lvbetData.map((league, index) => <League {...league} key={index} />)
-        : "Data not found"}
+      <div className="flex flex-row">
+        <div className="w-1/3">
+          <div className="bg-blue-950 m-2 p-2 text-center rounded">LVBET</div>
+          {lvbetData
+            ? lvbetData.map((league, index) => (
+                <League {...league} key={index} />
+              ))
+            : "Data not found"}
+        </div>
+        <div className="w-1/3">
+          <div className="bg-blue-950 m-2 p-2 text-center rounded">
+            888sports
+          </div>
+          {/* {lvbetData
+            ? lvbetData.map((league, index) => (
+                <League {...league} key={index} />
+              ))
+            : "Data not found"} */}
+        </div>
+        <div className="w-1/3">
+          <div className="bg-blue-950 m-2 p-2 text-center rounded">...</div>
+          {/* {lvbetData
+            ? lvbetData.map((league, index) => (
+                <League {...league} key={index} />
+              ))
+            : "Data not found"} */}
+        </div>
+      </div>
     </div>
   );
 };

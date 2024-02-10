@@ -12,6 +12,7 @@ export const getLvbetData = async () => {
             // headless: false // Procesy będą widoczne w nowej przeglądarce
         });
         const page = await browser.newPage();
+        await page.setViewport({ width: 1920, height: 1080});
         await page.goto(_lvbet.baseUrl);
 
         // Wyszukanie lig piłki nożnej
