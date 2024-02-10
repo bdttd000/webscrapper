@@ -67,7 +67,7 @@ export const get888sportsData = async () => {
                 const outputMatches = [];
 
                 // Przypisanie do zmiennej wszyskich meczy
-                const matches = await leaguePage.$$('a.event-description');
+                const matches = await leaguePage.$$('a.event-description:not(.event-description--inplay)');
                 for (const match of matches) {
                     // Stworzenie zmiennej przechowującej dane o danym meczu
                     const outputMatch = {};
@@ -97,19 +97,6 @@ export const get888sportsData = async () => {
                     let [matchTimeMonth, matchTimeDay] = matchTimeDayInfo.split(' ')
                     outputMatch.matchDate = `${matchTimeDay}-${monthTranslator(matchTimeMonth)}`;
                     outputMatch.matchTime = formatTime(matchTimeHour);
-                    
-                    // // Zaczytanie przycisków z kategoriami
-                    // await matchPage.waitForSelector(".TabsCarousel__tab");
-                    // const matchButtons = await matchPage.$$('.TabsCarousel__tab > span');
-
-                    // // Pętla wyszukująca przycisk z napisem "PLAYER" i klikająca go
-                    // for (const matchButton of matchButtons) {
-                    //     let matchButtonContent = await matchPage.evaluate(el => el.textContent, matchButton);
-                    //     if (matchButtonContent.toLowerCase() === 'player') {
-                    //         matchButton.click();
-                    //         break;
-                    //     }
-                    // }
 
                     // Wydobycie nazwy nagłówków zakładów, chcemy żeby zawierał frazę "OR MORE PASSES"
                     await matchPage.waitForSelector(".PreplayMarkets");
@@ -143,20 +130,33 @@ export const get888sportsData = async () => {
                             let playerNameAndRates = await betRow.$('.selection_name > span');
                             playerNameAndRates = await betRow.evaluate(el => el.textContent, playerNameAndRates);
 
-                            // TODO
-                            // Rozbić string na playerName i rates, a pozniej stworzyć strukturę do wysłania do bazy
+                            // Rozbijanie danych na dane zawodnika i jego kurs
                             console.log(playerNameAndRates);
+                            const playerName = playerNameAndRates.match(/^[^\d]+/)[0].trim();
+                            let rates = playerNameAndRates.match(/\d+\/\d+/)[0].trim();
+                            rates = Math.round((1 + parseFloat(eval(rates))) * 100) / 100;
+                            console.log(playerName + ' ' + rates);
+
+                            // TODO
+                            // Dodanie danych do obiektu
                         }
+
+                        
 
                         await new Promise(r => setTimeout(r, 1000));
                     }
+
+                    // TODO
+                    // Dodanie meczu do ligi
 
                     // Zamykamy kartę
                     await leaguePage.bringToFront();  
                     await matchPage.close();   
 
-                    //TODO wydobycie nazw meczy, dat meczy, kursów graczy
                 }
+
+                // TODO
+                // Wysłanie danych do api
 
                 // Zamykamy kartę
                 await page.bringToFront();  
