@@ -3,9 +3,14 @@ import { _888sports } from '../config/database.js';
 import { scrollDown, loadPageContent } from '../utils/scrollingMethods.js';
 import { formatTime, monthTranslator } from '../utils/timeTranslators.js';
 import { extractTensFromText } from '../utils/extractTensFromText.js';
+import { sendData } from '../utils/dataReceiver.js';
 
 export const get888sportsData = async () => {
-    const data = {pageName: _888sports.leagueName, leagues: _888sports.leagues};
+    if (_888sports.leagueNames.length < 1) {
+        return
+    }
+
+    const data = {pageName: _888sports.pageName, leagues: []};
     try {
         // Setup i włączenie strony ze zmienionym viewportem
         const browser = await puppeteer.launch({
@@ -47,8 +52,13 @@ export const get888sportsData = async () => {
             const leagues = await page.$$('.bb-content-section__title--see-more');
             for (const league of leagues) {
                 // Sprawdzenie czy dana liga nas interesuje, jeśli tak to usuwamy ją z naszej listy
+                if (!_888sports.leagueNames) {
+                    break;
+                }
                 let leagueName = await page.evaluate(el => el.textContent, league);
                 if (!_888sports.leagueNames.includes(leagueName)) continue;
+                const outputLeague = {leagueName: '', matches: []};
+                outputLeague.leagueName = leagueName;
                 _888sports.leagueNames = _888sports.leagueNames.filter(requiredLeagues => requiredLeagues !== leagueName);
 
                 // Otwieramy naszą ligę w nowej karcie
@@ -97,6 +107,10 @@ export const get888sportsData = async () => {
                     let [matchTimeMonth, matchTimeDay] = matchTimeDayInfo.split(' ')
                     outputMatch.matchDate = `${matchTimeDay}-${monthTranslator(matchTimeMonth)}`;
                     outputMatch.matchTime = formatTime(matchTimeHour);
+                    outputMatch.players = [];
+
+                    // Utworzenie obiektu zbierającego informacje o zawodnikach
+                    const players = {};
 
                     // Wydobycie nazwy nagłówków zakładów, chcemy żeby zawierał frazę "OR MORE PASSES"
                     await matchPage.waitForSelector(".PreplayMarkets");
@@ -131,23 +145,30 @@ export const get888sportsData = async () => {
                             playerNameAndRates = await betRow.evaluate(el => el.textContent, playerNameAndRates);
 
                             // Rozbijanie danych na dane zawodnika i jego kurs
-                            console.log(playerNameAndRates);
                             const playerName = playerNameAndRates.match(/^[^\d]+/)[0].trim();
                             let rates = playerNameAndRates.match(/\d+\/\d+/)[0].trim();
                             rates = Math.round((1 + parseFloat(eval(rates))) * 100) / 100;
-                            console.log(playerName + ' ' + rates);
 
-                            // TODO
-                            // Dodanie danych do obiektu
+                            // Dodanie danych do obiektu // koniec
+                            if (!players[playerName]) {
+                                players[playerName] = { playerName: playerName, rates: {} };
+                            }
+
+                            players[playerName].rates[numberOfPasses] = rates;
                         }
-
-                        
-
-                        await new Promise(r => setTimeout(r, 1000));
                     }
 
-                    // TODO
-                    // Dodanie meczu do ligi
+                    // Dodanie informacji o zawodnikach do zmiennej outputMatch
+                    Object.values(players).forEach(playerInfo => {
+                        outputMatch.players.push(playerInfo);
+                    });
+
+                    // Dodanie meczu do ligi tylko jeśli są jakiekolwiek kursy zawodników
+                    if (outputMatch.players.length > 0) {
+                        outputMatches.push(outputMatch);
+                    }
+
+                    console.log(outputMatch)
 
                     // Zamykamy kartę
                     await leaguePage.bringToFront();  
@@ -155,15 +176,36 @@ export const get888sportsData = async () => {
 
                 }
 
-                // TODO
-                // Wysłanie danych do api
+                // Dodanie meczy do ligi
+                if (outputMatches.length > 0) {
+                    outputLeague.matches = outputMatches;
+                }
+
+                console.log(outputMatches)
 
                 // Zamykamy kartę
                 await page.bringToFront();  
-                await leaguePage.close();     
+                await leaguePage.close();    
+                
+                console.log(outputLeague);
+
+                // Dodanie ligi do ostatecznego api
+                if (outputLeague.matches.length > 0) {
+                    data.leagues.push(outputLeague);
+                }
             }            
         }
+
+        console.log(data);
+
         await browser.close();
+
+        // Wysłanie danych do bazy danych
+        data.leagues.forEach(leagueInfo => {
+            sendData({pageName: data.pageName, leagues: leagueInfo});
+        });
+        
+    
     } catch (error) {
         console.error('Wystąpił błąd:', error);
     }

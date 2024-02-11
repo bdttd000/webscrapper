@@ -53,7 +53,6 @@ export const getLvbetData = async () => {
             }
 
             if (!isCategoryFound) {
-                // console.log('nie znaleziono kategorii');
                 continue;
             }
 
@@ -122,9 +121,9 @@ export const getLvbetData = async () => {
             }
             data.leagues.push({leagueName: outputLeagueName, matches: outputMatches});
             const outputData = {leagueName: outputLeagueName, matches: outputMatches};
-            const updatedData = {pageName: _lvbet.pageName, data: outputData};
+            const updatedData = {pageName: _lvbet.pageName, leagues: outputData};
             sendData(updatedData) // generateExcelData(outputData) - aby generować excela
-            // console.log(outputMatches)
+            console.log(updatedData)
         }
 
         await browser.close();

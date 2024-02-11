@@ -43,7 +43,7 @@ app.get("/api/888sports/update", async(req, res) => {
 
 app.post('/api', async (req, res) => {
     const receivedData = req.body;
-    await database.collection(`${receivedData.pageName}`).insertOne(receivedData.data);
+    await database.collection(`${receivedData.pageName}`).insertOne(receivedData.leagues);
 });
 
 const PORT = process.env.PORT || 3000;
