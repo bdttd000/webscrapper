@@ -4,6 +4,9 @@ import League from "./components/League";
 
 const App = () => {
   const [lvbetData, setLvbetData] = useState<leagueInterface[] | undefined>();
+  const [sports888Data, set888sportsData] = useState<
+    leagueInterface[] | undefined
+  >();
   const [content, setContent] = useState<string>("Wszystko zostało załadowane");
 
   useEffect(() => {
@@ -11,6 +14,12 @@ const App = () => {
       .then((resonse) => resonse.json())
       .then((data) => {
         setLvbetData(data);
+      });
+
+    fetch("/api/888sports")
+      .then((resonse) => resonse.json())
+      .then((data) => {
+        set888sportsData(data);
       });
   }, []);
 
@@ -31,10 +40,9 @@ const App = () => {
 
     await fetch("/api/888sports/update")
       .then((resonse) => resonse.json())
-      .then((data) => console.log(data));
-    // .then((data) => {
-    //   setBackendData(data);
-    // });
+      .then((data) => {
+        set888sportsData(data);
+      });
 
     setContent("Api zostało załadowane");
   };
@@ -69,11 +77,11 @@ const App = () => {
           <div className="bg-blue-950 m-2 p-2 text-center rounded">
             888sports
           </div>
-          {/* {lvbetData
-            ? lvbetData.map((league, index) => (
+          {sports888Data
+            ? sports888Data.map((league, index) => (
                 <League {...league} key={index} />
               ))
-            : "Data not found"} */}
+            : "Data not found"}
         </div>
         <div className="w-1/3">
           <div className="bg-blue-950 m-2 p-2 text-center rounded">...</div>
