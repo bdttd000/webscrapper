@@ -39,6 +39,14 @@ app.get("/api/888sports", async (req, res) => {
 
 app.get("/api/888sports/update", async(req, res) => {
     await get888sportsData();
+    try {
+        const collection = await database.collection("888sports");
+        const results = await collection.find({}).toArray();
+        res.status(200).send(results);
+    } catch (error) {
+        console.error("Błąd podczas aktualizowania danych:", error);
+        res.status(500).send("Wystąpił błąd podczas aktualizowania danych.");
+    }
 })
 
 app.post('/api', async (req, res) => {
