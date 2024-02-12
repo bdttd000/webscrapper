@@ -1,5 +1,5 @@
 const leagueMappings = {
-    // 888sports
+    // sports888
     'English Premier League': 'EPL',
     'Spanish La Liga': 'LaLiga',
 };

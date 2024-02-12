@@ -4,9 +4,12 @@ import League from "./components/League";
 
 const App = () => {
   const [lvbetData, setLvbetData] = useState<leagueInterface[] | undefined>();
-  const [sports888Data, set888sportsData] = useState<
+  const [sports888Data, setSports888Data] = useState<
     leagueInterface[] | undefined
   >();
+  // const [comparedData, setComparedData] = useState<
+  //   leagueInterface[] | undefined
+  // >();
   const [content, setContent] = useState<string>("Wszystko zostało załadowane");
 
   useEffect(() => {
@@ -16,10 +19,10 @@ const App = () => {
         setLvbetData(data);
       });
 
-    fetch("/api/888sports")
+    fetch("/api/sports888")
       .then((resonse) => resonse.json())
       .then((data) => {
-        set888sportsData(data);
+        setSports888Data(data);
       });
   }, []);
 
@@ -35,14 +38,26 @@ const App = () => {
     setContent("Api zostało załadowane");
   };
 
-  const fetch888sportsApi = async (data: any): Promise<void> => {
-    setContent("Pobieranie api z 888sports");
+  const fetchSports888Api = async (data: any): Promise<void> => {
+    setContent("Pobieranie api z sports888");
 
-    await fetch("/api/888sports/update")
+    await fetch("/api/sports888/update")
       .then((resonse) => resonse.json())
       .then((data) => {
-        set888sportsData(data);
+        setSports888Data(data);
       });
+
+    setContent("Api zostało załadowane");
+  };
+
+  const fetchComparedData = async (data: any): Promise<void> => {
+    setContent("Pobieranie porównanych danych");
+
+    await fetch("/api/compare");
+    // .then((resonse) => resonse.json())
+    // .then((data) => {
+    //   setComparedData(data);
+    // });
 
     setContent("Api zostało załadowane");
   };
@@ -58,9 +73,15 @@ const App = () => {
         </div>
         <div
           className="bg-gray-800 m-2 p-2 rounded w-fit cursor-pointer"
-          onClick={fetch888sportsApi}
+          onClick={fetchSports888Api}
         >
           Fetch 888sports Api
+        </div>
+        <div
+          className="bg-gray-800 m-2 p-2 rounded w-fit cursor-pointer"
+          onClick={fetchComparedData}
+        >
+          Porównaj dane
         </div>
       </div>
       <div className="bg-blue-700 m-2 p-2 rounded w-fit">{content}</div>
@@ -75,7 +96,7 @@ const App = () => {
         </div>
         <div className="w-1/3">
           <div className="bg-blue-950 m-2 p-2 text-center rounded">
-            888sports
+            sports888
           </div>
           {sports888Data
             ? sports888Data.map((league, index) => (
@@ -85,8 +106,8 @@ const App = () => {
         </div>
         <div className="w-1/3">
           <div className="bg-blue-950 m-2 p-2 text-center rounded">...</div>
-          {/* {lvbetData
-            ? lvbetData.map((league, index) => (
+          {/* {comparedData
+            ? comparedData.map((league, index) => (
                 <League {...league} key={index} />
               ))
             : "Data not found"} */}

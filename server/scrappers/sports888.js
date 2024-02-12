@@ -1,17 +1,17 @@
 import puppeteer from 'puppeteer';
-import { _888sports } from '../config/database.js';
+import { _sports888 } from '../config/database.js';
 import { scrollDown, loadPageContent } from '../utils/scrollingMethods.js';
 import { formatTime, monthTranslator } from '../utils/timeTranslators.js';
 import { extractTensFromText } from '../utils/extractTensFromText.js';
 import { sendData } from '../utils/dataReceiver.js';
 import { normalizeLeagueName } from '../utils/leagueMappings.js';
 
-export const get888sportsData = async () => {
-    if (_888sports.leagueNames.length < 1) {
+export const getSports888Data = async () => {
+    if (_sports888.leagueNames.length < 1) {
         return
     }
 
-    const data = {pageName: _888sports.pageName, leagues: []};
+    const data = {pageName: _sports888.pageName, leagues: []};
     try {
         // Setup i włączenie strony ze zmienionym viewportem
         const browser = await puppeteer.launch({
@@ -21,7 +21,7 @@ export const get888sportsData = async () => {
         });
         const page = await browser.newPage();
         await page.setViewport({ width: 1920, height: 1080});
-        await page.goto(_888sports.baseUrl);
+        await page.goto(_sports888.baseUrl);
 
         // Przejście do meczy piłki nożnej 
         await page.locator("[href='#football']").click();
@@ -31,7 +31,7 @@ export const get888sportsData = async () => {
         const buttons = await page.$$('.carousel.matchesCarousel .carousel__item');
         for (const button of buttons) {
             // Sprawdzenie czy mamy jeszcze jakieś interesujące nas ligi
-            if (_888sports.leagueNames.length === 0) {
+            if (_sports888.leagueNames.length === 0) {
                 break;
             }
 
@@ -53,14 +53,14 @@ export const get888sportsData = async () => {
             const leagues = await page.$$('.bb-content-section__title--see-more');
             for (const league of leagues) {
                 // Sprawdzenie czy dana liga nas interesuje, jeśli tak to usuwamy ją z naszej listy
-                if (!_888sports.leagueNames) {
+                if (!_sports888.leagueNames) {
                     break;
                 }
                 let leagueName = await page.evaluate(el => el.textContent, league);
-                if (!_888sports.leagueNames.includes(leagueName)) continue;
+                if (!_sports888.leagueNames.includes(leagueName)) continue;
                 const outputLeague = {leagueName: '', matches: []};
                 outputLeague.leagueName = normalizeLeagueName(leagueName);
-                _888sports.leagueNames = _888sports.leagueNames.filter(requiredLeagues => requiredLeagues !== leagueName);
+                _sports888.leagueNames = _sports888.leagueNames.filter(requiredLeagues => requiredLeagues !== leagueName);
 
                 // Otwieramy naszą ligę w nowej karcie
                 const newPagePromise = new Promise(x => browser.once('targetcreated', target => x(target.page())));
