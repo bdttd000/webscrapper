@@ -4,6 +4,7 @@ import { scrollDown, loadPageContent } from '../utils/scrollingMethods.js';
 import { formatTime, monthTranslator } from '../utils/timeTranslators.js';
 import { extractTensFromText } from '../utils/extractTensFromText.js';
 import { sendData } from '../utils/dataReceiver.js';
+import { normalizeLeagueName } from '../utils/leagueMappings.js';
 
 export const get888sportsData = async () => {
     if (_888sports.leagueNames.length < 1) {
@@ -58,7 +59,7 @@ export const get888sportsData = async () => {
                 let leagueName = await page.evaluate(el => el.textContent, league);
                 if (!_888sports.leagueNames.includes(leagueName)) continue;
                 const outputLeague = {leagueName: '', matches: []};
-                outputLeague.leagueName = leagueName;
+                outputLeague.leagueName = normalizeLeagueName(leagueName);
                 _888sports.leagueNames = _888sports.leagueNames.filter(requiredLeagues => requiredLeagues !== leagueName);
 
                 // Otwieramy naszą ligę w nowej karcie
