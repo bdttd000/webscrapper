@@ -53,7 +53,9 @@ const App = () => {
   const fetchComparedData = async (data: any): Promise<void> => {
     setContent("Pobieranie porównanych danych");
 
-    await fetch("/api/compare");
+    await fetch("/api/compare")
+      .then((resonse) => resonse.json())
+      .then((response) => console.log(response));
     // .then((resonse) => resonse.json())
     // .then((data) => {
     //   setComparedData(data);

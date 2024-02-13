@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { _sports888 } from '../config/database.js';
+import { _sports888 } from '../config/config.js';
 import { scrollDown, loadPageContent } from '../utils/scrollingMethods.js';
 import { formatTime, monthTranslator } from '../utils/timeTranslators.js';
 import { extractTensFromText } from '../utils/extractTensFromText.js';

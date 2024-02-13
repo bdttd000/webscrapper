@@ -20,6 +20,7 @@
     "fuzzball": "^2.1.2",
     "mongodb": "^6.2.0",
     "mongoose": "^7.6.3",
+    "numeric": "^1.2.6",
     "puppeteer": "^21.4.0"
   },
   "devDependencies": {

@@ -1,10 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
-import { database, pagesNames } from './config/database.js';
+import { database } from './config/database.js';
 import { getLvbetData } from './scrappers/lvbet.js';
 import { getSports888Data } from './scrappers/sports888.js';
 import bodyParser from 'body-parser';
+import { compareData } from './utils/compareData.js';
 
 const app = express();
 app.use(bodyParser.json());
@@ -50,22 +51,9 @@ app.get("/api/sports888/update", async(req, res) => {
 })
 
 app.get("/api/compare", async (req, res) => {
-    const data = {};
-
-    try {
-        for (const pageName of pagesNames) {
-            const collection = database.collection(pageName);
-            const pageData = await collection.find({}).toArray();
-            data[pageName] = pageData;
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Błąd serwera" });
-    }
-
-    console.log(data);
-    // console.log(data.lvbet)
-    // console.log(data.sports888);
+    const result = await compareData();
+    console.log(result);
+    res.status(200).send(result);
 });
 
 app.post('/api', async (req, res) => {

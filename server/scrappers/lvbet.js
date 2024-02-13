@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { _lvbet } from '../config/database.js';
+import { _lvbet } from '../config/config.js';
 import { sendData } from '../utils/dataReceiver.js';
 
 export const getLvbetData = async () => {
